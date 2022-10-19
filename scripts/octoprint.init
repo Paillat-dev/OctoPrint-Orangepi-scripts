@@ -22,6 +22,7 @@ PKGNAME=octoprint
 PIDFILE=/var/run/$PKGNAME.pid
 SCRIPTNAME=/etc/init.d/$PKGNAME
 DEFAULTS=/etc/default/$PKGNAME
+DAEMON=/home/pi/OctoPrint/venv/bin/octoprint
 
 # Read configuration variable file if it is present
 [ -r $DEFAULTS ] && . $DEFAULTS
