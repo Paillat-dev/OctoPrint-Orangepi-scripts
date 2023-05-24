@@ -18,10 +18,10 @@ from octoprint.util.version import (
 )
 
 SENTRY_URL_SERVER = (
-    "https://faa02914ec8f42139e12a36482cfdb60@o118517.ingest.sentry.io/1373987"
+    "https://21dc312545ad43599cec6447a22b1199@o118517.ingest.sentry.io/1373987"
 )
 SENTRY_URL_COREUI = (
-    "https://be7a53389fb045b48d6c384bb8ee89eb@o118517.ingest.sentry.io/1374096"
+    "https://2e072e9c589742e18ba5e26f22395779@o118517.ingest.sentry.io/1374096"
 )
 
 SETTINGS_DEFAULTS = {
@@ -158,7 +158,9 @@ def _enable_errortracking():
 
         unique_id = str(uuid.uuid4())
         s.set(
-            ["plugins", "errortracking", "unique_id"], unique_id, defaults=plugin_defaults
+            ["plugins", "errortracking", "unique_id"],
+            unique_id,
+            defaults=plugin_defaults,
         )
         s.save()
 

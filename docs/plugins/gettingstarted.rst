@@ -20,7 +20,7 @@ development environment::
   $ virtualenv venv
   [...]
   $ source venv/bin/activate
-  (venv) $ pip install -e .[develop,plugins]
+  (venv) $ pip install -e '.[develop,plugins]'
   [...]
   (venv) $ octoprint --help
   Usage: octoprint [OPTIONS] COMMAND [ARGS]...
@@ -55,7 +55,6 @@ development environment::
 We'll start at the most basic form a plugin can take - just a few simple lines of Python code:
 
 .. code-block:: python
-   :linenos:
 
    __plugin_name__ = "Hello World"
    __plugin_version__ = "1.0.0"
@@ -91,8 +90,7 @@ Apart from being discovered by OctoPrint, our plugin does nothing yet. We want t
 "Hello World!" to the log upon server startup. Modify our ``helloworld.py`` like this:
 
 .. code-block:: python
-   :emphasize-lines: 4-8,14
-   :linenos:
+   :emphasize-lines: 1-5,11
 
    import octoprint.plugin
 
@@ -120,7 +118,7 @@ up and ready to serve requests.
 
 You'll also note that we are using ``self._logger`` for logging. Where did that one come from? OctoPrint's plugin system
 injects :ref:`a some useful objects <sec-plugins-mixins-injectedproperties>` into our plugin implementation classes,
-one of those being a fully instantiated :ref:`python logger <logging>` ready to be
+one of those being a fully instantiated :py:mod:`python logger <logging>` ready to be
 used by your plugin. As you can see in the log output above, that logger uses the namespace ``octoprint.plugins.helloworld``
 for our little plugin here, or more generally ``octoprint.plugins.<plugin identifier>``.
 
@@ -163,7 +161,7 @@ Then we can use the ``octoprint dev plugin:new`` command [#f1]_ to generate a ne
    email [you@example.com]: you@somewhere.net
    github_username [you]: yourGithubName
    plugin_version [0.1.0]: 1.0.0
-   plugin_description [TODO]: A quick "Hello World" example plugin for OCtoPrint
+   plugin_description [TODO]: A quick "Hello World" example plugin for OctoPrint
    plugin_license [AGPLv3]:
    plugin_homepage [https://github.com/yourGithubName/OctoPrint-Helloworld]:
    plugin_source [https://github.com/yourGithubName/OctoPrint-Helloworld]:
@@ -178,6 +176,9 @@ Then we can use the ``octoprint dev plugin:new`` command [#f1]_ to generate a ne
 This will create a project structure in the ``OctoPrint-HelloWorld`` folder we just changed to that looks like this::
 
    extras/
+       github/
+           bug_report.yml
+           feature_request.yml
        README.txt
        helloworld.md
    octoprint_helloworld/
@@ -200,6 +201,7 @@ This will create a project structure in the ``OctoPrint-HelloWorld`` folder we j
    README.md
    requirements.txt
    setup.py
+   setup.cfg
 
 While we'll need some of those folders later on, we'll now delete everything that we don't need right now first, that
 will make it easier to understand what folder does what later on. Delete the following folders and anything in them:
@@ -219,6 +221,7 @@ The final project structure should look like this for now::
    MANIFEST.in
    README.md
    requirements.txt
+   setup.cfg
    setup.py
 
 Out of curiosity, take a look into the ``setup.py`` file. The cookiecutter template should have prefilled all the
@@ -270,7 +273,6 @@ Something is still a bit ugly though. Take a look into ``__init__.py`` and ``set
 of information now defined twice:
 
 .. code-block:: python
-   :linenos:
    :caption: __init__.py
 
    __plugin_name__ = "Hello World"
@@ -278,7 +280,6 @@ of information now defined twice:
    __plugin_description__ = "A quick \"Hello World\" example plugin for OctoPrint"
 
 .. code-block:: python
-   :linenos:
    :caption: setup.py
 
    plugin_name = "OctoPrint-HelloWorld"
@@ -290,7 +291,6 @@ within ``setup.py``! So, we don't really need to define all this data twice. Rem
 and ``__plugin_description__`` from ``__init__.py``, but leave ``__plugin_implementation__`` and ``__plugin_pythoncompat__``:
 
 .. code-block:: python
-   :linenos:
 
    import octoprint.plugin
 
@@ -313,7 +313,6 @@ Our "Hello World" Plugin still gets detected fine, but it's now listed under the
 
 .. code-block:: python
    :emphasize-lines: 7
-   :linenos:
 
    import octoprint.plugin
 
@@ -359,7 +358,6 @@ add the :class:`TemplatePlugin` to our ``HelloWorldPlugin`` class:
 
 .. code-block:: python
    :emphasize-lines: 4
-   :linenos:
 
    import octoprint.plugin
 
@@ -376,7 +374,6 @@ Next, we'll create a sub folder ``templates`` underneath our ``octoprint_hellowo
 ``helloworld_navbar.jinja2`` like so:
 
 .. code-block:: html
-   :linenos:
 
    <a href="https://en.wikipedia.org/wiki/Hello_world">Hello World!</a>
 
@@ -393,6 +390,7 @@ Our plugin's directory structure should now look like this::
    README.md
    requirements.txt
    setup.py
+   setup.cfg
 
 Restart OctoPrint and open the web interface in your browser (make sure to clear your browser's cache!).
 
@@ -423,7 +421,6 @@ Let's take a look at how all that would look in our plugin's ``__init__.py``:
 
 .. code-block:: python
    :emphasize-lines: 5, 7, 9-10
-   :linenos:
 
    import octoprint.plugin
 
@@ -455,7 +452,6 @@ Adjust your plugin's ``__init__.py`` like this:
 
 .. code-block:: python
    :emphasize-lines: 12-13
-   :linenos:
 
    import octoprint.plugin
 
@@ -478,13 +474,12 @@ Adjust your plugin's ``__init__.py`` like this:
 Also adjust your plugin's ``templates/helloworld_navbar.jinja2`` like this:
 
 .. code-block:: html
-   :linenos:
 
    <a href="{{ plugin_helloworld_url|escape }}">Hello World!</a>
 
 OctoPrint injects the template variables that your plugin defines prefixed with ``plugin_<plugin identifier>_`` into
 the template renderer, so your ``url`` got turned into ``plugin_helloworld_url`` which you can now use as a simple
-`Jinja2 Variable <http://jinja.octoprint.org/templates.html#variables>`_ in your plugin's template.
+`Jinja2 Variable <https://jinja.palletsprojects.com/templates.html#variables>`_ in your plugin's template.
 
 Restart OctoPrint and shift-reload the page in your browser (to make sure you really get a fresh copy). The link should
 still work and point to the URL we defined as default.
@@ -515,7 +510,6 @@ So in your plugin's ``templates`` folder create a new file ``helloworld_settings
 into it:
 
 .. code-block:: html
-   :linenos:
 
    <form class="form-horizontal">
        <div class="control-group">
@@ -537,7 +531,6 @@ Now adjust your ``templates/helloworld_navbar.jinja2`` file to use a ``data-bind
 settings view model into the ``href`` attribute of the link tag:
 
 .. code-block:: html
-   :linenos:
 
    <a href="#" data-bind="attr: {href: settings.settings.plugins.helloworld.url}">Hello World!</a>
 
@@ -560,7 +553,6 @@ again since we don't use that anymore:
 
 .. code-block:: python
    :emphasize-lines: 12-16
-   :linenos:
 
    import octoprint.plugin
 
@@ -618,7 +610,6 @@ First let us create the Jinja2 template for our tab. In your plugin's ``template
 ``helloworld_tab.jinja2`` like so:
 
 .. code-block:: html
-   :linenos:
 
    <div class="input-append">
        <input type="text" class="input-xxlarge" data-bind="value: newUrl">
@@ -648,6 +639,7 @@ look like this::
    README.md
    requirements.txt
    setup.py
+   setup.cfg
 
 We need to tell OctoPrint about this new static asset so that it will properly inject it into the page. For this we
 just need to subclass :class:`~octoprint.plugin.AssetPlugin` and override its method :func:`~octoprint.plugin.AssetPlugin.get_assets`
@@ -655,7 +647,6 @@ like so:
 
 .. code-block:: python
    :emphasize-lines: 6,19-22
-   :linenos:
 
    import octoprint.plugin
 
@@ -693,7 +684,6 @@ Then we'll create our custom `Knockout <http://knockoutjs.com/documentation/intr
 like so:
 
 .. code-block:: javascript
-   :linenos:
 
    $(function() {
        function HelloWorldViewModel(parameters) {
@@ -768,7 +758,6 @@ So it appears that this stuff is working great already. Only one thing is a bit 
 our ``helloworld_tab.jinja2``:
 
 .. code-block:: html
-   :linenos:
    :emphasize-lines: 6
 
    <div class="input-append">
@@ -807,7 +796,6 @@ First we'll create a new folder within our plugin's ``static`` folder called ``c
 Put something like the following into ``helloworld.css``:
 
 .. code-block:: css
-   :linenos:
 
    #tab_plugin_helloworld iframe {
      width: 100%;
@@ -818,7 +806,6 @@ Put something like the following into ``helloworld.css``:
 Don't forget to remove the ``style`` attribute from the ``iframe`` tag in ``helloworld_tab.jinja2``:
 
 .. code-block:: html
-   :linenos:
    :emphasize-lines: 6
 
    <div class="input-append">
@@ -833,7 +820,6 @@ a reference to our CSS file:
 
 .. code-block:: python
    :emphasize-lines: 23
-   :linenos:
 
    import octoprint.plugin
 
@@ -916,7 +902,6 @@ Then adjust our returned assets to include our LESS file as well:
 
 .. code-block:: python
    :emphasize-lines: 24
-   :linenos:
 
    import octoprint.plugin
 
@@ -966,7 +951,6 @@ source code. In the ``head`` section of the page you'll see that instead of your
 embedded the ``helloworld.less`` file instead:
 
 .. code-block:: html
-   :linenos:
    :emphasize-lines: 5
 
    <head>
@@ -995,7 +979,6 @@ setting it to ``css``, e.g.
 Restart and shift-reload and take another look at the ``head``:
 
 .. code-block:: html
-   :linenos:
    :emphasize-lines: 5
 
    <head>
@@ -1025,7 +1008,6 @@ stop it from doing that at the start of this section, we should switch this back
 Just out of curiosity, restart, shift-reload and take a final look at the ``head``:
 
 .. code-block:: html
-   :linenos:
    :emphasize-lines: 3-5
 
    <head>
@@ -1066,10 +1048,9 @@ might show what's possible with a few lines of code already. Finally, just take 
 
 .. seealso::
 
-   `Jinja Template Designer Documentation <http://jinja.octoprint.org/templates.html>`_
+   `Jinja Template Designer Documentation <https://jinja.palletsprojects.com/templates.html>`_
       Jinja's Template Designer Documentation describes the syntax and semantics of the template language used
-      by OctoPrint's frontend. Linked here are the docs for Jinja 2.8.1, which OctoPrint still
-      relies on for backwards compatibility reasons [#f3]_.
+      by OctoPrint's frontend.
 
 .. rubric:: Footnotes
 
@@ -1082,7 +1063,3 @@ might show what's possible with a few lines of code already. Finally, just take 
 .. [#f2] Refer to the `LESS documentation <http://lesscss.org/#using-less>`_ on how to do that. If you are developing
          your plugin under Windows you might also want to give `WinLESS <http://winless.org/>`_ a look which will run
          in the background and keep your CSS files up to date with your various project's LESS files automatically.
-.. [#f3] Please always consult the Jinja documentation at `jinja.octoprint.org <http://jinja.octoprint.org>`_ instead of
-         the current stable documentation available at Jinja's project page. The reason for that is that for backwards
-         compatibility reasons OctoPrint currently sadly has to rely on an older version of Jinja. The documentation
-         available at `jinja.octoprint.org <http://jinja.octoprint.org>`_ matches that older version.
