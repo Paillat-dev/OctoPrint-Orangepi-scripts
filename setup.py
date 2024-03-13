@@ -36,7 +36,7 @@ SETUP_REQUIRES = []
 bundled_plugins = [
     "OctoPrint-FileCheck>=2021.2.23",
     "OctoPrint-FirmwareCheck>=2021.10.11",
-    "OctoPrint-PiSupport>=2022.6.13",
+    "OctoPrint-PiSupport>=2023.5.24",
 ]
 core_deps = [
     "argon2_cffi>=21.3.0,<22",
@@ -61,10 +61,10 @@ core_deps = [
     "pathvalidate>=2.5.2,<3",
     "pkginfo>=1.9.6,<2",
     "psutil>=5.9.4,<6",
-    "pydantic>=1.10.7,<2",
+    "pydantic==1.10.12",  # to be kept pinned until https://github.com/pydantic/pydantic/issues/7689 is resolved
     "pylru>=1.2.1,<2",
     "pyserial>=3.5,<4",
-    "PyYAML>=5.4.1,<6",  # no changelog available for version 6, so we're not risking it
+    "PyYAML>=6.0.1,<7",  # changelog at https://github.com/yaml/pyyaml/blob/master/CHANGES
     "requests>=2.28.2,<3",
     "sarge==0.1.7.post1",
     "semantic_version>=2.10.0,<3",
